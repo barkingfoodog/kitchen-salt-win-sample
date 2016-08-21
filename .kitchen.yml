@@ -1,0 +1,44 @@
+---
+driver:
+  name: vagrant
+
+provisioner:
+  name: salt_solo
+  is_file_root: true
+  salt_copy_filter:
+    - .git
+    - .gitignore
+    - .kitchen
+    - .kitchen.yml
+    - Gemfile
+    - Gemfile.lock
+    - test
+    - top.sls
+    - vagrant-cachier.rb
+
+platforms:
+  - name: eval-win2012r2-standard-salt
+    driver:
+      box_url: https://box.suran.com/eval-win2012r2-standard-salt/eval-win2012r2-standard-salt.json
+      provider: virtualbox
+      gui: false
+      customize:
+        memory: 1024
+        cpus: 2
+    transport:
+      name: winrm
+
+suites:
+  - name: example
+    provisioner:
+      pillars-from-files:
+        example.sls: example/files/pillar.sls
+      pillars:
+        top.sls:
+          base:
+            '*':
+              - example
+      state_top:
+        base:
+          '*':
+            - example.base
